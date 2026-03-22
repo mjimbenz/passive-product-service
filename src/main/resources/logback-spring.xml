@@ -1,0 +1,38 @@
+<configuration scan="true">
+
+    <property name="LOG_PATH" value="logs/passive-product-service"/>
+
+    <!-- CONSOLE JSON APPENDER -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+            <providers>
+
+                <timestamp>
+                    <timeZone>UTC</timeZone>
+                </timestamp>
+
+                <pattern>
+                    <pattern>
+                        {
+                        "level": "%level",
+                        "logger": "%logger",
+                        "thread": "%thread",
+                        "message": "%message",
+                        "traceId": "%X{traceId}",
+                        "spanId": "%X{spanId}",
+                        "customerId": "%X{customerId}",
+                        "productId": "%X{productId}"
+                        }
+                    </pattern>
+                </pattern>
+
+            </providers>
+        </encoder>
+    </appender>
+
+    <!-- ROOT LOGGER -->
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+    </root>
+
+</configuration>
