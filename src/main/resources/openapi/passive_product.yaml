@@ -5,7 +5,8 @@ info:
   description: Microservice for managing bank passive products.
 
 servers:
-  - url: /api/v1/passive-products
+  - url: http://localhost:8082
+    description: Local development server
 
 paths:
 
