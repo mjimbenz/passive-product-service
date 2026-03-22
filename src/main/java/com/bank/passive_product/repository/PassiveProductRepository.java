@@ -8,6 +8,7 @@ import reactor.core.publisher.Mono;
 public interface PassiveProductRepository extends ReactiveMongoRepository<PassiveProductEntity, String> {
     Flux<PassiveProductEntity> findByCustomerId(String customerId);
     Flux<PassiveProductEntity> findByActiveTrue();
-
     Mono<PassiveProductEntity> findByIdAndActiveTrue(String id);
+    Flux<PassiveProductEntity> findByCustomerIdAndActiveTrue(String customerId);
+    Mono<PassiveProductEntity> findByIdAndCustomerIdAndActiveTrue(String id, String customerId);
 }

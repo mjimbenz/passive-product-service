@@ -6,6 +6,7 @@ import com.bank.passive_product.exception.BusinessException;
 import com.bank.passive_product.model.PassiveProductEntity;
 import com.bank.passive_product.repository.PassiveProductRepository;
 import com.bank.passive_product.service.PassiveProductService;
+import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -95,6 +96,18 @@ public class PassiveProductServiceImpl implements PassiveProductService {
     public Mono<Double> getBalance(String id) {
         return repository.findById(id)
                 .map(PassiveProductEntity::getBalance);
+    }
+
+    public Flux<PassiveProductEntity> findByCustomerId(String customerId, @Nullable String productId) {
+        return validateCustomerExists(customerId)
+                .flatMapMany(customer -> {
+                    if (productId !=null && !productId.isBlank()){
+                        return repository.findByIdAndCustomerIdAndActiveTrue(productId, customerId)
+                                .flux()
+                                .switchIfEmpty(Mono.error(new BusinessException("Product not found for this customer")));
+                    }
+                    return repository.findByCustomerId(customerId);
+                });
     }
 
 

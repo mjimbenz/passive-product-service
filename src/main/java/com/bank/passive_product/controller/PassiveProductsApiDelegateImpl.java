@@ -66,6 +66,11 @@ public class PassiveProductsApiDelegateImpl implements PassiveProductApiDelegate
                 .map(ResponseEntity::ok);
     }
 
+    @Override
+    public Mono<ResponseEntity<Flux<PassiveProduct>>> customerCustomerIdGet(String customerId, String id, ServerWebExchange exchange) {
+        return Mono.just(ResponseEntity.ok(service.findByCustomerId(customerId, id).map(this::toModel)));
+    }
+
     private PassiveProductEntity toEntity(PassiveProductRequest r) {
         return PassiveProductEntity.builder()
                 .customerId(r.getCustomerId())

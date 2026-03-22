@@ -1,6 +1,7 @@
 package com.bank.passive_product.service;
 
 import com.bank.passive_product.model.PassiveProductEntity;
+import jakarta.annotation.Nullable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -17,5 +18,7 @@ public interface PassiveProductService {
     public Mono<Void> delete(String id);
 
     public Mono<Double> getBalance(String id);
+
+    Flux<PassiveProductEntity> findByCustomerId(String customerId, @Nullable String productId);
 }
 

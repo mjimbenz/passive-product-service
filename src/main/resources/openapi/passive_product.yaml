@@ -1,22 +1,21 @@
 openapi: 3.0.1
 info:
   title: Passive Product Service API
-  version: 1.0.0
+  version: 1.1.0
   description: Microservice for managing bank passive products.
 
 servers:
   - url: http://localhost:8082
-    description: Local development server
 
 paths:
 
   /:
     get:
-      summary: Get all passive products
+      summary: Get all passive products (only active)
       tags: [PassiveProduct]
       responses:
         "200":
-          description: List of products
+          description: List of active products
           content:
             application/json:
               schema:
@@ -43,7 +42,7 @@ paths:
 
   /{id}:
     get:
-      summary: Get product by ID
+      summary: Get product by ID (only active)
       tags: [PassiveProduct]
       parameters:
         - in: path
@@ -52,7 +51,7 @@ paths:
           schema: { type: string }
       responses:
         "200":
-          description: OK
+          description: Active product found
           content:
             application/json:
               schema:
@@ -76,10 +75,10 @@ paths:
               $ref: "#/components/schemas/PassiveProductRequest"
       responses:
         "200":
-          description: Updated
+          description: Updated product
 
     delete:
-      summary: Delete passive product
+      summary: Soft delete passive product
       tags: [PassiveProduct]
       parameters:
         - in: path
@@ -88,7 +87,7 @@ paths:
           schema: { type: string }
       responses:
         "204":
-          description: Deleted
+          description: Soft deleted
 
   /{id}/balance:
     get:
@@ -106,6 +105,32 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BalanceResponse"
+
+  /customer/{customerId}:
+    get:
+      summary: Get all active passive products for a specific customer
+      tags: [PassiveProduct]
+      parameters:
+        - in: path
+          name: customerId
+          required: true
+          schema: { type: string }
+        - in: query
+          name: id
+          required: false
+          schema: { type: string }
+      responses:
+        "200":
+          description: List of products for the customer
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PassiveProduct"
+        "404":
+          description: Customer not found or no products
+
 
 
 
@@ -131,6 +156,17 @@ components:
           type: number
         allowedMovementDay:
           type: integer
+        active:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        deletedAt:
+          type: string
+          format: date-time
 
     PassiveProductRequest:
       type: object
@@ -141,6 +177,10 @@ components:
         accountType:
           type: string
           enum: [SAVING, CURRENT, FIXED_TERM]
+        transactionLimit:
+          type: integer
+        maintenanceFee:
+          type: number
         allowedMovementDay:
           type: integer
 
