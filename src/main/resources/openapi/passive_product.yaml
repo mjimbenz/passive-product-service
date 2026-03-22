@@ -1,0 +1,154 @@
+openapi: 3.0.1
+info:
+  title: Passive Product Service API
+  version: 1.0.0
+  description: Microservice for managing bank passive products.
+
+servers:
+  - url: /api/v1/passive-products
+
+paths:
+
+  /:
+    get:
+      summary: Get all passive products
+      tags: [PassiveProduct]
+      responses:
+        "200":
+          description: List of products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PassiveProduct"
+
+    post:
+      summary: Create a passive product
+      tags: [PassiveProduct]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PassiveProductRequest"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PassiveProduct"
+
+  /{id}:
+    get:
+      summary: Get product by ID
+      tags: [PassiveProduct]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PassiveProduct"
+        "404":
+          description: Not found
+
+    put:
+      summary: Update passive product
+      tags: [PassiveProduct]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PassiveProductRequest"
+      responses:
+        "200":
+          description: Updated
+
+    delete:
+      summary: Delete passive product
+      tags: [PassiveProduct]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        "204":
+          description: Deleted
+
+  /{id}/balance:
+    get:
+      summary: Get balance of product
+      tags: [PassiveProduct]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Balance
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BalanceResponse"
+
+
+
+components:
+  schemas:
+
+    PassiveProduct:
+      type: object
+      required: [id, customerId, accountType, balance]
+      properties:
+        id:
+          type: string
+        customerId:
+          type: string
+        accountType:
+          type: string
+          enum: [SAVING, CURRENT, FIXED_TERM]
+        balance:
+          type: number
+        transactionLimit:
+          type: integer
+        maintenanceFee:
+          type: number
+        allowedMovementDay:
+          type: integer
+
+    PassiveProductRequest:
+      type: object
+      required: [customerId, accountType]
+      properties:
+        customerId:
+          type: string
+        accountType:
+          type: string
+          enum: [SAVING, CURRENT, FIXED_TERM]
+        transactionLimit:
+          type: integer
+        maintenanceFee:
+          type: number
+        allowedMovementDay:
+          type: integer
+
+    BalanceResponse:
+      type: object
+      properties:
+        balance:
+          type: number
