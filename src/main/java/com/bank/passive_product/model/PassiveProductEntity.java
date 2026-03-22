@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.LocalDateTime;
+
 @Document(collection = "passive_products")
 @Data
 @Builder
@@ -22,4 +24,12 @@ public class PassiveProductEntity {
     private Integer transactionLimit;
     private Double maintenanceFee;
     private Integer allowedMovementDay;
+
+
+    // Soft delete + auditoría
+    private boolean active;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    private LocalDateTime deletedAt;
+
 }
