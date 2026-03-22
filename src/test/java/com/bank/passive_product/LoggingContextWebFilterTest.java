@@ -90,7 +90,7 @@ class LoggingContextWebFilterTest {
     }
 
     // ------------------------------------------------------------------------
-    // 4. Extract customerId from path /customer/{id}
+    // 4. Extract customerId
     // ------------------------------------------------------------------------
     @Test
     void filter_shouldExtractCustomerIdFromPath() {

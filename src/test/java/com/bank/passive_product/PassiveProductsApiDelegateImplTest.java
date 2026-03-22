@@ -1,6 +1,4 @@
 package com.bank.passive_product;
-
-
 import com.bank.passive_product.api.model.BalanceResponse;
 import com.bank.passive_product.api.model.PassiveProduct;
 import com.bank.passive_product.api.model.PassiveProductRequest;
@@ -10,8 +8,6 @@ import com.bank.passive_product.service.PassiveProductService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
