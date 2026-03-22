@@ -70,8 +70,6 @@ public class PassiveProductsApiDelegateImpl implements PassiveProductApiDelegate
         return PassiveProductEntity.builder()
                 .customerId(r.getCustomerId())
                 .accountType(r.getAccountType().getValue())
-                .transactionLimit(r.getTransactionLimit())
-                .maintenanceFee(r.getMaintenanceFee().doubleValue())
                 .allowedMovementDay(r.getAllowedMovementDay())
                 .balance(0.0)
                 .build();

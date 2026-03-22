@@ -141,10 +141,6 @@ components:
         accountType:
           type: string
           enum: [SAVING, CURRENT, FIXED_TERM]
-        transactionLimit:
-          type: integer
-        maintenanceFee:
-          type: number
         allowedMovementDay:
           type: integer
 
