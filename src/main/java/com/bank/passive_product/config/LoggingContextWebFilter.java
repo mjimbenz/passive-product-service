@@ -67,9 +67,8 @@ public class LoggingContextWebFilter implements WebFilter {
         // 4. Execute request and CLEAR MDC AT THE END
         // -------------------------
         return chain.filter(exchange)
-                .doFinally(signalType -> {
-                    MDC.clear();
-                });
+                .doFinally(signalType -> MDC.clear()
+                );
     }
 
 

@@ -19,9 +19,7 @@
                         "thread": "%thread",
                         "message": "%message",
                         "traceId": "%X{traceId}",
-                        "spanId": "%X{spanId}",
-                        "customerId": "%X{customerId}",
-                        "productId": "%X{productId}"
+                        "spanId": "%X{spanId}"
                         }
                     </pattern>
                 </pattern>

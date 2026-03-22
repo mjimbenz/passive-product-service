@@ -23,6 +23,9 @@ public class PassiveProductServiceImpl implements PassiveProductService {
 
     private final PassiveProductRepository repository;
     private final CustomerWebClient customerWebClient;
+    private static final String ACCONT_CURRENT = "CURRENT";
+    private static final String ACCONT_SAVING = "SAVING";
+    private static final String ACCONT_FIXED_TERM = "FIXED_TERM";
 
     /*
     * FIND ALL (Only active products) + LOGS
@@ -187,19 +190,15 @@ public class PassiveProductServiceImpl implements PassiveProductService {
         return repository.findByCustomerId(customerId)
                 .collectList()
                 .flatMap(accounts -> {
-
-                    if(accountType.equals("SAVING") &&
-                            accounts.stream().anyMatch(a -> a.getAccountType().equals("SAVING"))) {
+                    if(accountType.equals(ACCONT_SAVING) &&
+                            accounts.stream().anyMatch(a -> a.getAccountType().equals(ACCONT_SAVING))) {
                         return Mono.error(new BusinessException("Personal customer already has a saving account"));
                     }
-
-                    if(accountType.equals("CURRENT") &&
-                            accounts.stream().anyMatch(a -> a.getAccountType().equals("CURRENT"))) {
+                    if(accountType.equals(ACCONT_CURRENT) &&
+                            accounts.stream().anyMatch(a -> a.getAccountType().equals(ACCONT_CURRENT))) {
                         return Mono.error(new BusinessException("Personal customer already has a current account"));
                     }
-
                     // FIXED_TERM: allowed multiple – no checks
-
                     return Mono.empty();
                 });
     }
@@ -207,7 +206,7 @@ public class PassiveProductServiceImpl implements PassiveProductService {
 
     private Mono<Void> validateBusinessCustomer(String accountType) {
 
-        if(accountType.equals("SAVING") || accountType.equals("FIXED_TERM")) {
+        if(accountType.equals(ACCONT_SAVING) || accountType.equals(ACCONT_FIXED_TERM)) {
             return Mono.error(new BusinessException(
                     "Business customers cannot have saving or fixed-term accounts"
             ));
@@ -219,20 +218,17 @@ public class PassiveProductServiceImpl implements PassiveProductService {
     private Mono<PassiveProductEntity> applyAccountRules(PassiveProductEntity e) {
 
         switch (e.getAccountType()) {
-
-            case "SAVING":
+            case ACCONT_SAVING:
                 e.setMaintenanceFee(0.0);
                 if(e.getTransactionLimit() == null)
-                    e.setTransactionLimit(10); // default
+                    e.setTransactionLimit(10);
                 break;
-
-            case "CURRENT":
+            case ACCONT_CURRENT:
                 if(e.getMaintenanceFee() == null)
-                    e.setMaintenanceFee(25.0); // example
+                    e.setMaintenanceFee(25.0);
                 e.setTransactionLimit(null);
                 break;
-
-            case "FIXED_TERM":
+            case ACCONT_FIXED_TERM:
                 e.setMaintenanceFee(0.0);
                 e.setTransactionLimit(1);
                 if(e.getAllowedMovementDay() == null)
@@ -244,8 +240,4 @@ public class PassiveProductServiceImpl implements PassiveProductService {
         }
         return Mono.just(e);
     }
-
-
-
-
 }
