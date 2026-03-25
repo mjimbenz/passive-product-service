@@ -25,7 +25,11 @@ public class PassiveProductEntity {
     private String customerId;
 
     @NotBlank(message = "El tipo de cuenta es obligatorio")
-    private String accountType;  // Ej: SAVINGS, CURRENT
+    @Pattern(
+            regexp = "SAVING|FIXED_TERM|CURRENT",
+            message = "El tipo de producto debe ser PERSONAL_CREDIT o CREDIT_CARD"
+    )
+    private String accountType;
 
     @NotNull(message = "El saldo es obligatorio")
     @PositiveOrZero(message = "El saldo no puede ser negativo")
