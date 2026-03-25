@@ -25,13 +25,13 @@ public class KafkaConsumerConfig {
     private Map<String, Object> baseProps() {
         Map<String, Object> props = new HashMap<>();
 
-        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "kafka:9092");
 
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, KafkaAvroDeserializer.class);
 
         // Avro + Schema Registry
-        props.put("schema.registry.url", "http://localhost:8081");
+        props.put("schema.registry.url", "http://schema-registry:8081");
         props.put("specific.avro.reader", true);
 
         // Reintentos seguros
