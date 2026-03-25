@@ -11,4 +11,5 @@ public interface PassiveProductRepository extends ReactiveMongoRepository<Passiv
     Mono<PassiveProductEntity> findByIdAndActiveTrue(String id);
     Flux<PassiveProductEntity> findByCustomerIdAndActiveTrue(String customerId);
     Mono<PassiveProductEntity> findByIdAndCustomerIdAndActiveTrue(String id, String customerId);
+
 }

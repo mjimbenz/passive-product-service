@@ -1,0 +1,13 @@
+{
+  "type": "record",
+  "name": "MovementRequestedEvent",
+  "namespace": "com.bank.events",
+  "fields": [
+    { "name": "movementId", "type": "string" },
+    { "name": "customerId", "type": "string" },
+    { "name": "productId", "type": "string" },
+    { "name": "movementType", "type": "string" },
+    { "name": "amount", "type": "double" },
+    { "name": "eventTimestamp", "type": "long" }
+  ]
+}

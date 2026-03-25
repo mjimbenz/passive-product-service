@@ -1,0 +1,9 @@
+{
+  "type": "record",
+  "name": "MovementCompletedEvent",
+  "namespace": "com.bank.events",
+  "fields": [
+    { "name": "movementId", "type": "string" },
+    { "name": "status", "type": "string" }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "type": "record",
+  "name": "MovementRejectedEvent",
+  "namespace": "com.bank.events",
+  "fields": [
+    { "name": "movementId", "type": "string" },
+    { "name": "reason", "type": "string" }
+  ]
+}
