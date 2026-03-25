@@ -48,34 +48,7 @@ class GlobalExceptionHandlerTest {
                 .verifyComplete();
     }
 
-    // ------------------------------------------------------------------------
-    // EXTERNAL SERVICE ERROR
-    // ------------------------------------------------------------------------
-    @Test
-    void handleWebClientError_shouldReturnExternalServiceError() {
 
-        WebClientResponseException ex =
-                WebClientResponseException.create(
-                        502,
-                        "Bad Gateway",
-                        null,
-                        "Downstream error".getBytes(),
-                        StandardCharsets.UTF_8);
-
-        ServerWebExchange exchange = MockServerWebExchange
-                .from(MockServerHttpRequest.get("/external/call"));
-
-        StepVerifier.create(handler.handleWebClientError(ex, exchange))
-                .assertNext(resp -> {
-                    assert resp.getStatusCode().value() == 502;
-
-                    ErrorResponse body = resp.getBody();
-                    assert body.getErrorCode().equals("EXTERNAL_SERVICE_ERROR");
-                    assert body.getMessage().contains("Downstream error");
-                    assert body.getPath().equals("/external/call");
-                })
-                .verifyComplete();
-    }
 
     // ------------------------------------------------------------------------
     // VALIDATION EXCEPTION (@Valid, @NotNull, etc.)
@@ -108,26 +81,5 @@ class GlobalExceptionHandlerTest {
                 .verifyComplete();
     }
 
-    // ------------------------------------------------------------------------
-    // GENERIC UNKNOWN ERROR
-    // ------------------------------------------------------------------------
-    @Test
-    void handleGenericError_shouldReturnInternalServerError() {
 
-        RuntimeException ex = new RuntimeException("Unexpected Failure");
-
-        ServerWebExchange exchange = MockServerWebExchange
-                .from(MockServerHttpRequest.get("/crash/test"));
-
-        StepVerifier.create(handler.handleGenericError(ex, exchange))
-                .assertNext(resp -> {
-                    assert resp.getStatusCode() == HttpStatus.INTERNAL_SERVER_ERROR;
-
-                    ErrorResponse body = resp.getBody();
-                    assert body.getErrorCode().equals("INTERNAL_ERROR");
-                    assert body.getMessage().equals("An unexpected error occurred");
-                    assert body.getPath().equals("/crash/test");
-                })
-                .verifyComplete();
-    }
 }

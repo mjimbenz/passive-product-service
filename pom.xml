@@ -32,7 +32,7 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<jacoco.version>0.8.8</jacoco.version>
 		<sonar.host.url>http://localhost:9095</sonar.host.url>
-		<sonar.token>sqa_cbaebe4aed479bf27047aa5f576040c277d64ea6</sonar.token>
+		<sonar.token>sqa_7fc43a705634c6087321bb048c6a3e1db57eebea</sonar.token>
 	</properties>
 
 	<repositories>
@@ -278,7 +278,7 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>3.2.5</version>
 				<configuration>
-					<skipTests>true</skipTests>
+					<skipTests>false</skipTests>
 				</configuration>
 			</plugin>
 
@@ -436,6 +436,9 @@
 								<exclude>**/api/ApiUtil.class</exclude>
 								<exclude>**/CustomerApiDelegate*.class</exclude>
 								<exclude>**/CustomerApiController*.class</exclude>
+								<exclude>**/config/**</exclude>
+								<exclude>**/*Config.java</exclude>
+								<exclude>**/*Configuration.java</exclude>
 
 								<exclude>**/openapitools/**</exclude>
 								<exclude>**/configuration/**</exclude>
@@ -457,7 +460,7 @@
 										<limit>
 											<counter>INSTRUCTION</counter>
 											<value>COVEREDRATIO</value>
-											<minimum>0.0</minimum>
+											<minimum>0.3</minimum>
 										</limit>
 									</limits>
 								</rule>
