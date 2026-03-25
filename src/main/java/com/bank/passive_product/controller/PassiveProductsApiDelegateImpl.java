@@ -97,7 +97,6 @@ public class PassiveProductsApiDelegateImpl implements PassiveProductApiDelegate
         return PassiveProductEntity.builder()
                 .customerId(r.getCustomerId())
                 .accountType(r.getAccountType().toString())
-                .allowedMovementDay(r.getAllowedMovementDay())
                 .balance(0.0)
                 .build();
     }

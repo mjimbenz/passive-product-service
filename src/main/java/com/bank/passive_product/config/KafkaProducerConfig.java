@@ -26,6 +26,7 @@ public class KafkaProducerConfig {
 
         config.put("schema.registry.url", "http://localhost:8081");
 
+
         return new DefaultKafkaProducerFactory<>(config);
     }
 

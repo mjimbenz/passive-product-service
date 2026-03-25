@@ -59,6 +59,7 @@ public class PassiveProductServiceImpl implements PassiveProductService {
     public Mono<PassiveProductEntity> create(PassiveProductEntity e) {
         log.info("[Service] Creating product -> customerId={}, accountType={}", e.getCustomerId(), e.getAccountType());
         e.setActive(true);
+        e.setTransactionLimit(10);
         e.setCreatedAt(LocalDateTime.now());
         e.setBalance(0.0);
 

@@ -87,7 +87,6 @@ class PassiveProductsApiDelegateImplTest {
 
         PassiveProductRequest req = new PassiveProductRequest()
                 .customerId("C1")
-                .allowedMovementDay(5)
                 .accountType(PassiveProductRequest.AccountTypeEnum.SAVING);
 
         PassiveProductEntity saved = new PassiveProductEntity();
