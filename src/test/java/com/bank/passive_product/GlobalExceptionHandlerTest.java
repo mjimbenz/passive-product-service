@@ -10,11 +10,9 @@ import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.BeanPropertyBindingResult;
-import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.mock.web.server.MockServerWebExchange;
 import reactor.test.StepVerifier;
-import java.nio.charset.StandardCharsets;
 
 class GlobalExceptionHandlerTest {
 
