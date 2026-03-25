@@ -18,6 +18,7 @@ public interface PassiveProductService {
     public Mono<Void> delete(String id);
 
     public Mono<Double> getBalance(String id);
+    public Mono<Double> updateBalance(String id, double amount);
 
     Flux<PassiveProductEntity> findByCustomerId(String customerId, @Nullable String productId);
 }

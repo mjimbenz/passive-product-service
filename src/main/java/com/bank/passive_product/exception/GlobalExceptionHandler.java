@@ -14,7 +14,6 @@ import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
 import java.util.stream.Collectors;
-
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
@@ -29,14 +28,14 @@ public class GlobalExceptionHandler {
                 .build();
     }
 
-    // -------------------------
-    // 1. BusinessException
-    // -------------------------
+    // -----------------------------------------------------
+    // 1. BUSINESS EXCEPTION (errores de reglas de negocio)
+    // -----------------------------------------------------
     @ExceptionHandler(BusinessException.class)
     public Mono<ResponseEntity<ErrorResponse>> handleBusinessException(
             BusinessException ex, ServerWebExchange exchange) {
 
-        log.warn("Business error: {}", ex.getMessage());
+        log.warn("[BusinessException] {} | path={}", ex.getMessage(), exchange.getRequest().getPath());
 
         return Mono.just(
                 ResponseEntity
@@ -49,29 +48,31 @@ public class GlobalExceptionHandler {
         );
     }
 
-    // -------------------------
-    // 2. Errors from external services (WebClient)
-    // -------------------------
-    @ExceptionHandler(WebClientResponseException.class)
-    public Mono<ResponseEntity<ErrorResponse>> handleWebClientError(
-            WebClientResponseException ex, ServerWebExchange exchange) {
+    // -----------------------------------------------------
+    // 2. DECODING EXCEPTION (JSON mal formado o ENUM inválido)
+    // -----------------------------------------------------
+    @ExceptionHandler(org.springframework.core.codec.DecodingException.class)
+    public Mono<ResponseEntity<ErrorResponse>> handleDecodingException(
+            Exception ex, ServerWebExchange exchange) {
 
-        log.error("External service error [{}]: {}", ex.getStatusCode(), ex.getMessage());
+        log.error("[DecodingException] Error leyendo el body. Causa: {} | path={}",
+                ex.getCause() != null ? ex.getCause().getMessage() : ex.getMessage(),
+                exchange.getRequest().getPath());
 
         return Mono.just(
                 ResponseEntity
-                        .status(ex.getStatusCode())
+                        .status(HttpStatus.BAD_REQUEST)
                         .body(buildError(
-                                "EXTERNAL_SERVICE_ERROR",
-                                ex.getResponseBodyAsString(),
+                                "INVALID_REQUEST",
+                                "El formato del cuerpo enviado es inválido. Verifica tipos, nombre de campos y ENUMs.",
                                 exchange.getRequest().getPath().value()
                         ))
         );
     }
 
-    // -------------------------
-    // 3. Validation errors (@Valid, @NotNull, etc.)
-    // -------------------------
+    // -----------------------------------------------------
+    // 3. VALIDATION EXCEPTION
+    // -----------------------------------------------------
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public Mono<ResponseEntity<ErrorResponse>> handleValidationException(
             MethodArgumentNotValidException ex, ServerWebExchange exchange) {
@@ -79,14 +80,13 @@ public class GlobalExceptionHandler {
         String errors = ex.getBindingResult()
                 .getFieldErrors()
                 .stream()
-                .map(FieldError::getDefaultMessage)
+                .map(field -> field.getField() + " " + field.getDefaultMessage())
                 .collect(Collectors.joining("; "));
 
-        log.warn("Validation error: {}", errors);
+        log.warn("[ValidationException] {} | path={}", errors, exchange.getRequest().getPath());
 
         return Mono.just(
-                ResponseEntity
-                        .status(HttpStatus.BAD_REQUEST)
+                ResponseEntity.badRequest()
                         .body(buildError(
                                 "VALIDATION_ERROR",
                                 errors,
@@ -95,21 +95,49 @@ public class GlobalExceptionHandler {
         );
     }
 
-    // -------------------------
-    // 4. ANY UNKNOWN ERROR
-    // -------------------------
+    // -----------------------------------------------------
+    // 4. EXTERNAL SERVICE RESPONSE EXCEPTION (WebClient errores HTTP)
+    // -----------------------------------------------------
+    @ExceptionHandler(WebClientResponseException.class)
+    public Mono<ResponseEntity<ErrorResponse>> handleWebClientError(
+            WebClientResponseException ex, ServerWebExchange exchange) {
+
+        log.error("[ExternalServiceError] status={} body='{}' path={}",
+                ex.getStatusCode(),
+                ex.getResponseBodyAsString(),
+                exchange.getRequest().getPath());
+
+        return Mono.just(
+                ResponseEntity
+                        .status(ex.getStatusCode())
+                        .body(buildError(
+                                "EXTERNAL_SERVICE_ERROR",
+                                ex.getStatusText(),
+                                exchange.getRequest().getPath().value()
+                        ))
+        );
+    }
+
+    // -----------------------------------------------------
+    // 5. CAJA NEGRA: Cualquier error desconocido
+    // -----------------------------------------------------
     @ExceptionHandler(Throwable.class)
     public Mono<ResponseEntity<ErrorResponse>> handleGenericError(
             Throwable ex, ServerWebExchange exchange) {
 
-        log.error("Unexpected error: {}", ex.getMessage(), ex);
+        log.error("[UnexpectedError] {} | cause={} | path={}",
+                ex.getMessage(),
+                ex.getCause() != null ? ex.getCause().getMessage() : "none",
+                exchange.getRequest().getPath(),
+                ex // stacktrace
+        );
 
         return Mono.just(
                 ResponseEntity
                         .status(HttpStatus.INTERNAL_SERVER_ERROR)
                         .body(buildError(
                                 "INTERNAL_ERROR",
-                                "An unexpected error occurred",
+                                "Ocurrió un error inesperado en el servicio.",
                                 exchange.getRequest().getPath().value()
                         ))
         );

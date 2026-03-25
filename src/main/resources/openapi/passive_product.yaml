@@ -105,6 +105,30 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BalanceResponse"
+    patch:
+      summary: Update product balance
+      tags: [ PassiveProduct ]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BalanceUpdateRequest"
+      responses:
+        "200":
+          description: Balance updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PassiveProduct"
+        "400":
+          description: Invalid request (e.g. credit limit exceeded)
+
 
   /customer/{customerId}:
     get:
@@ -188,4 +212,10 @@ components:
       type: object
       properties:
         balance:
+          type: number
+    BalanceUpdateRequest:
+      type: object
+      required: [amount]
+      properties:
+        amount:
           type: number

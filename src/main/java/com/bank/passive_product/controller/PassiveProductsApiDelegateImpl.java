@@ -2,11 +2,13 @@ package com.bank.passive_product.controller;
 
 import com.bank.passive_product.api.PassiveProductApiDelegate;
 import com.bank.passive_product.api.model.BalanceResponse;
+import com.bank.passive_product.api.model.BalanceUpdateRequest;
 import com.bank.passive_product.api.model.PassiveProduct;
 import com.bank.passive_product.api.model.PassiveProductRequest;
 import com.bank.passive_product.model.PassiveProductEntity;
 import com.bank.passive_product.service.PassiveProductService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
@@ -17,6 +19,7 @@ import java.math.BigDecimal;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class PassiveProductsApiDelegateImpl implements PassiveProductApiDelegate {
 
     private final PassiveProductService service;
@@ -38,8 +41,11 @@ public class PassiveProductsApiDelegateImpl implements PassiveProductApiDelegate
 
     @Override
     public Mono<ResponseEntity<PassiveProduct>> rootPost(Mono<PassiveProductRequest> passiveProductRequest, ServerWebExchange exchange) {
+        log.info("[api] Creating product -> {}", passiveProductRequest);
         return passiveProductRequest.map(this::toEntity)
                 .flatMap(service::create)
+                .doOnSuccess(c -> log.info("[api] Customer validated for create, id={}",c.getCustomerId()))
+                .doOnError(err -> log.error("[api] Customer validation failed for create, error={}", err.getMessage()))
                 .map(this::toModel)
                 .map(ResponseEntity::ok);
     }
@@ -71,10 +77,26 @@ public class PassiveProductsApiDelegateImpl implements PassiveProductApiDelegate
         return Mono.just(ResponseEntity.ok(service.findByCustomerId(customerId, id).map(this::toModel)));
     }
 
+    @Override
+    public Mono<ResponseEntity<PassiveProduct>> idBalancePatch(String id, Mono<BalanceUpdateRequest> balanceUpdateRequest, ServerWebExchange exchange) {
+        log.info("[api] Updating balance for passive product with id={} -> {}", id, balanceUpdateRequest);
+        return balanceUpdateRequest
+                .flatMap(request -> {
+                    log.info("[api] Validating balance update for passive product with id={} -> {}", id, request);
+                    return service.updateBalance(id, request.getAmount().doubleValue())
+                            .flatMap(e -> service.findById(id));
+                })
+                .map(this::toModel)
+                .map(ResponseEntity::ok)
+                .doOnSuccess(c -> log.info("[api] Successfully updated balance for passive product with id={}", id))
+                .doOnError(err -> log.error("[api] Error updating balance for passive product with id={}, error={}", id, err.getMessage()));
+
+    }
+
     private PassiveProductEntity toEntity(PassiveProductRequest r) {
         return PassiveProductEntity.builder()
                 .customerId(r.getCustomerId())
-                .accountType(r.getAccountType().getValue())
+                .accountType(r.getAccountType().toString())
                 .allowedMovementDay(r.getAllowedMovementDay())
                 .balance(0.0)
                 .build();
@@ -87,6 +109,7 @@ public class PassiveProductsApiDelegateImpl implements PassiveProductApiDelegate
                 .accountType(PassiveProduct.AccountTypeEnum.fromValue(e.getAccountType()))
                 .balance(BigDecimal.valueOf(e.getBalance()))
                 .transactionLimit(e.getTransactionLimit())
+                .active(e.isActive())
                 .maintenanceFee(BigDecimal.valueOf(e.getMaintenanceFee()))
                 .allowedMovementDay(e.getAllowedMovementDay());
     }

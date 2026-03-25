@@ -151,6 +151,25 @@ public class PassiveProductServiceImpl implements PassiveProductService {
 
     }
 
+    @Override
+    public Mono<Double> updateBalance(String id, double amount) {
+        log.info("[Service] Updating balance for id={} with amount={}", id, amount);
+        return repository.findByIdAndActiveTrue(id)
+                .switchIfEmpty(Mono.error(new BusinessException("Product not found or inactive")))
+                .flatMap(entity -> {
+                    double newBalance = entity.getBalance() + amount;
+                    if (newBalance < 0) {
+                        return Mono.error(new BusinessException("Insufficient balance"));
+                    }
+                    entity.setBalance(newBalance);
+                    entity.setUpdatedAt(LocalDateTime.now());
+                    return repository.save(entity);
+                })
+                .map(PassiveProductEntity::getBalance)
+                .doOnSuccess(bal -> log.info("[Service] Updated balance for id={} is {}", id, bal))
+                .doOnError(err -> log.error("[Service] Error updating balance id={}, err={}", id, err.getMessage()));
+    }
+
     /*
      *   FIND BY CUSTOMER + PRODUCT FILTER + Soft Delete + Logs
      */

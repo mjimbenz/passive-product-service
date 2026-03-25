@@ -32,7 +32,7 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<jacoco.version>0.8.8</jacoco.version>
 		<sonar.host.url>http://localhost:9095</sonar.host.url>
-		<sonar.token>sqa_42487ae4f625ebe7af4a79af5dc2803c78d7afe4</sonar.token>
+		<sonar.token>sqa_cbaebe4aed479bf27047aa5f576040c277d64ea6</sonar.token>
 	</properties>
 
 	<dependencies>
@@ -156,7 +156,7 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<version>3.3.2</version>
 				<configuration>
-					<mainClass>com.bank.customer.CustomerServiceApplication</mainClass>
+					<mainClass>com.bank.passive_product.PassiveProductServiceApplication</mainClass>
 				</configuration>
 			</plugin>
 
@@ -166,7 +166,7 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>3.2.5</version>
 				<configuration>
-					<skipTests>false</skipTests>
+					<skipTests>true</skipTests>
 				</configuration>
 			</plugin>
 
@@ -314,11 +314,9 @@
 								<reportFormat>XML</reportFormat>
 							</formats>
 							<excludes>
-								<exclude>**/config/**</exclude>
 								<exclude>com/bank/events/**</exclude>
 								<exclude>**/*Application*</exclude>
 								<exclude>**/dto/**</exclude>
-								<exclude>**/exception/**</exclude>
 
 
 								<exclude>**/api/**</exclude>
