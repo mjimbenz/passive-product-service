@@ -11,7 +11,7 @@ RUN keytool -importcert -trustcacerts -noprompt \
     -alias corporate-proxy \
     -file /usr/local/share/ca-certificates/proxy.crt \
     -keystore $JAVA_HOME/lib/security/cacerts \
-    -storepass changeit \
+    -storepass changeit
 
 COPY pom.xml .
 COPY src ./src
